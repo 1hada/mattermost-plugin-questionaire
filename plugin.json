@@ -22,7 +22,24 @@
     "settings_schema": {
         "header": "Header: Configure your Questionaire settings below.",
         "footer": "Footer: The code for this Questionaire can be found [here](https://github.com/mattermost/mattermost-plugin-demo).",
-        "settings": []
+        "settings": [
+            {
+                "key": "QuestionServerAddress",
+                "display_name": "Question Server Address:",
+                "type": "text",
+                "help_text": "The ipv4 address.",
+                "placeholder": "127.0.0.1",
+                "default": "127.0.0.1"
+            },
+            {
+                "key": "QuestionPort",
+                "display_name": "Question Server Port:",
+                "type": "text",
+                "help_text": "Port number between 5000 and 65535.",
+                "placeholder": "8000",
+                "default": "8000"
+            }
+        ]
     },
     "props": {
         "support_packet": "Questionaire support packet"

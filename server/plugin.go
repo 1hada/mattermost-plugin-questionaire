@@ -26,7 +26,7 @@ type Plugin struct {
 
 	// configuration is the active plugin configuration. Consult getConfiguration and
 	// setConfiguration for usage.
-	//configuration *configuration
+	configuration *configuration
 
 	router *mux.Router
 
