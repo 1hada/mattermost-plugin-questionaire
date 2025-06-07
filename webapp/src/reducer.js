@@ -1,6 +1,20 @@
 import {combineReducers} from 'redux';
 
-import {STATUS_CHANGE, OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL, SUBMENU} from './action_types';
+import {RECEIVED_PLUGIN_SETTINGS, STATUS_CHANGE, OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL, SUBMENU} from './action_types';
+
+const initialState = {
+    QuestionServerAddress: '',
+    QuestionPort: '',
+};
+
+const serverSettings = (state = initialState, action) => {
+    switch (action.type) {
+        case RECEIVED_PLUGIN_SETTINGS:
+            return action.data;
+        default:
+            return state;
+    }
+};
 
 const enabled = (state = false, action) => {
     switch (action.type) {
@@ -34,6 +48,7 @@ const subMenu = (state = '', action) => {
 };
 
 export default combineReducers({
+    serverSettings,
     enabled,
     rootModalVisible,
     subMenu,

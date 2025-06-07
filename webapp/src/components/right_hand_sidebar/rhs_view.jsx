@@ -19,21 +19,26 @@ export default class RHSView extends React.PureComponent {
             statusMessage: '',
             iconColor: 'black',
             iconSymbol: 'icon-information-outline',
+            questionServer: '',
         };
     }
 
     componentDidMount() {
-        fetch('http://localhost:5000/buttons')
-        .then((res) => res.json())
-        .then((data) => {
-            this.setState({
-                mainText: data.main_text,
-                sideNote: data.side_note,
-                buttons: data.buttons,
-                correctButtonId: data.correct_button,
-            });
+        // Get the User settings
+        this.loadSettings().then(() => {
+            fetch(`http://${this.state.questionServer}/buttons`)
+                .then((res) => res.json())
+                .then((data) => {
+                    this.setState({
+                        mainText: data.main_text,
+                        sideNote: data.side_note,
+                        buttons: data.buttons,
+                        correctButtonId: data.correct_button,
+                    });
+                })
+                .catch((err) => console.error('Failed to fetch buttons:', err));
         });
-
+        
         Client4.getMe().then((user) => {
             this.setState({
                 currentUser: {
@@ -45,18 +50,28 @@ export default class RHSView extends React.PureComponent {
             console.error('Failed to get current user:', err);
         });
     }
+    
+
+    loadSettings() {
+        return fetch('/plugins/com.mattermost.questionare/custom_config_settings')
+            .then((response) => response.json())
+            .then((config) => {
+                this.setState({
+                    questionServer: `${config.QuestionServerAddress}:${config.QuestionPort}`,
+                });
+            })
+            .catch((err) => console.error('Failed to load settings:', err));
+    }
 
     handleButtonClick = (buttonId) => {
-        const {currentUser, correctButtonId} = this.state;
-
-        fetch('http://localhost:5000/button-click', {
+        fetch(`http://${this.state.questionServer}/button-click`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 id: buttonId,
-                user_id: currentUser?.id,
-                username: currentUser?.username,
-                correct_button: correctButtonId,
+                user_id: this.state.currentUser?.id,
+                username: this.state.currentUser?.username,
+                correct_button: this.state.correctButtonId,
             }),
         })
         .then((res) => res.json())

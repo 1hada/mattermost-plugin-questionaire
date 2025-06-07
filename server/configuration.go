@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"net"
+	"encoding/json"
 
 	"github.com/pkg/errors"
 
@@ -23,7 +22,7 @@ type configuration struct {
 	QuestionServerAddress string
 
 	// The port handling the question and answer requests.
-	QuestionPort int
+	QuestionPort string
 
 	// disabled tracks whether or not the plugin has been disabled after activation. It always starts enabled.
 	disabled bool
@@ -72,10 +71,9 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 	p.configuration = configuration
 }
 
+
 // OnConfigurationChange is invoked when configuration changes may have been made.
 //
-// This demo implementation ensures the configured demo user and channel are created for use
-// by the plugin.
 func (p *Plugin) OnConfigurationChange() error {
 	if p.client == nil {
 		p.client = pluginapi.NewClient(p.API, p.Driver)
@@ -94,18 +92,6 @@ func (p *Plugin) OnConfigurationChange() error {
 }
 
 
-// Validate checks that the address is a valid IPv4 address and port is within valid range.
-func (c *configuration) validateConfiguration() error {
-	ip := net.ParseIP(c.QuestionServerAddress)
-	if ip == nil || ip.To4() == nil {
-		return fmt.Errorf("invalid IPv4 address: %s", c.QuestionServerAddress)
-	}
-	if c.QuestionPort < 5000 || c.QuestionPort > 65535 {
-		return fmt.Errorf("invalid port number: %d", c.QuestionPort)
-	}
-	return nil
-}
-
 // ConfigurationWillBeSaved is invoked before saving the configuration to the
 // backing store.
 // An error can be returned to reject the operation. Additionally, a new
@@ -123,15 +109,27 @@ func (p *Plugin) ConfigurationWillBeSaved(newCfg *model.Config) (*model.Config, 
 	if cfg.disabled {
 		return nil, nil
 	}
-
-	if err := cfg.validateConfiguration(); err != nil {
+	
+	configData := newCfg.PluginSettings.Plugins[manifest.Id]
+	js, err := json.Marshal(configData)
+	if err != nil {
 		p.API.LogError(
-			"Configuration error ConfigurationWillBeSaved",
-			"error", err,
+			"Failed to marshal config data ConfigurationWillBeSaved",
+			"error", err.Error(),
 		)
+		return nil, nil
 	}
-	// Configuration is valid.
-	return nil, nil
+
+	if err := json.Unmarshal(js, &cfg); err != nil {
+		p.API.LogError(
+			"Failed to unmarshal config data ConfigurationWillBeSaved",
+			"error", err.Error(),
+		)
+		return nil, nil
+	}
+
+	p.API.LogInfo("NewCfg returned.")
+	return newCfg, nil
 }
 
 // setEnabled wraps setConfiguration to configure if the plugin is enabled.

@@ -1,7 +1,23 @@
 import {getConfig} from 'mattermost-redux/selectors/entities/general';
 
 import {id as pluginId} from './manifest';
-import {STATUS_CHANGE, OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL, SUBMENU} from './action_types';
+import {RECEIVED_PLUGIN_SETTINGS, STATUS_CHANGE, OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL, SUBMENU} from './action_types';
+
+import {Client4} from 'mattermost-redux/client';
+
+
+export function fetchPluginSettings() {
+    return async (dispatch) => {
+        const config = await Client4.getConfig();
+        dispatch({
+            type: RECEIVED_PLUGIN_SETTINGS,
+            data: {
+                QuestionServerAddress: config.PluginSettings?.QuestionServerAddress,
+                QuestionPort: config.PluginSettings?.QuestionPort,
+            },
+        });
+    };
+}
 
 export const openRootModal = (subMenuText = '') => (dispatch) => {
     dispatch({

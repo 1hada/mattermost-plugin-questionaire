@@ -7,8 +7,14 @@ import RHSView from './components/right_hand_sidebar';
 import {
     ChannelHeaderButtonIcon,
 } from './components/icons';
+import reducer from './reducer';
 
-export default class DemoPlugin {
+import {
+    fetchPluginSettings,
+    getStatus,
+} from './actions';
+
+export default class QuestionarePlugin {
     initialize(registry, store) {
         const {toggleRHSPlugin} = registry.registerRightHandSidebarComponent(
             RHSView,
@@ -25,6 +31,12 @@ export default class DemoPlugin {
                 defaultMessage='Questionaire'
             />,
         );
+        
+        //registry.registerAdminConsoleCustomSetting('CustomSetting', CustomSetting);
+        registry.registerReducer(reducer);
+        // Immediately fetch the current plugin status.
+        store.dispatch(fetchPluginSettings());
+        store.dispatch(getStatus());
     }
 
     uninitialize() {
