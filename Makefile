@@ -192,7 +192,7 @@ endif
 ## Generates a tar bundle of the plugin for install.
 .PHONY: bundle
 bundle:
-	rm -rf dist/
+	rm -rf dist/*
 	mkdir -p dist/$(PLUGIN_ID)
 	cp $(MANIFEST_FILE) dist/$(PLUGIN_ID)/
 ifneq ($(wildcard $(ASSETS_DIR)/.),)
