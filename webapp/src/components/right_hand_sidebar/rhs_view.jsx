@@ -76,7 +76,7 @@ export default class RHSView extends React.PureComponent {
         })
         .then((res) => res.json())
         .then((data) => {
-            const isCorrect = data.is_correct;
+            const isCorrect = buttonId == this.state.correctButtonId;
             this.setState({
                 selectedButtonId: buttonId,
                 statusMessage: isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!',
