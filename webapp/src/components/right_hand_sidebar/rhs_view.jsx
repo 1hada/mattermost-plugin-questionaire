@@ -10,16 +10,17 @@ export default class RHSView extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            questionUuid: '',
             mainText: '',
             sideNote: '',
             buttons: [],
             correctButtonId: null,
             currentUser: null,
-            selectedButtonId: null,
             statusMessage: '',
             iconColor: 'black',
             iconSymbol: 'icon-information-outline',
             questionServer: '',
+            responseStats: '',
         };
     }
 
@@ -30,6 +31,7 @@ export default class RHSView extends React.PureComponent {
                 .then((res) => res.json())
                 .then((data) => {
                     this.setState({
+                        questionUuid: data.question_uuid,
                         mainText: data.main_text,
                         sideNote: data.side_note,
                         buttons: data.buttons,
@@ -69,6 +71,7 @@ export default class RHSView extends React.PureComponent {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 id: buttonId,
+                question_uuid: this.state.questionUuid,
                 user_id: this.state.currentUser?.id,
                 username: this.state.currentUser?.username,
                 correct_button: this.state.correctButtonId,
@@ -78,10 +81,10 @@ export default class RHSView extends React.PureComponent {
         .then((data) => {
             const isCorrect = buttonId == this.state.correctButtonId;
             this.setState({
-                selectedButtonId: buttonId,
                 statusMessage: isCorrect ? '✅ Correct answer!' : '❌ Wrong answer!',
                 iconColor: isCorrect ? 'green' : 'red',
                 iconSymbol: isCorrect ? 'icon-check' : 'icon-close',
+                responseStats: data.response_stats
             });
         })
         .catch((err) => {
@@ -115,6 +118,7 @@ export default class RHSView extends React.PureComponent {
                         {this.state.statusMessage || 'Choose an option above'}
                     </div>
                 </div>
+                <div dangerouslySetInnerHTML={{ __html: this.state.responseStats}}/>
             </div>
         );
     }
