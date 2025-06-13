@@ -27,7 +27,7 @@ export default class RHSView extends React.PureComponent {
     componentDidMount() {
         // Get the User settings
         this.loadSettings().then(() => {
-            fetch(`http://${this.state.questionServer}/buttons`)
+            fetch(`${this.state.questionServer}/buttons`)
                 .then((res) => res.json())
                 .then((data) => {
                     this.setState({
@@ -66,7 +66,7 @@ export default class RHSView extends React.PureComponent {
     }
 
     handleButtonClick = (buttonId) => {
-        fetch(`http://${this.state.questionServer}/button-click`, {
+        fetch(`${this.state.questionServer}/button-click`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
