@@ -35,6 +35,7 @@ func (p *Plugin) initializeAPI() {
 
 
 func (p *Plugin) handleCustomConfigSettings(w http.ResponseWriter, r *http.Request) {
+	p.API.LogInfo("FOR TESTING handleCustomConfigSettings we are requesting the QuestionServerAddress :" + p.getConfiguration().QuestionServerAddress + " and QuestionPort : " + p.getConfiguration().QuestionPort)
 
 	// Basic auth check
 	config := map[string]string{
