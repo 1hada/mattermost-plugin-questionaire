@@ -1,5 +1,5 @@
 package main
-/*
+
 import (
 	"testing"
 
@@ -49,4 +49,3 @@ func TestConfiguration(t *testing.T) {
 		assert.NotEqual(t, configuration1, plugin.getConfiguration())
 	})
 }
-*/

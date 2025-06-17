@@ -70,7 +70,6 @@ func (p *Plugin) initializeAPI() {
 
 
 func (p *Plugin) handleCustomConfigSettings(w http.ResponseWriter, r *http.Request) {
-	p.API.LogInfo("FOR TESTING handleCustomConfigSettings we are requesting the QuestionServerAddress :" + p.getConfiguration().QuestionServerAddress + " and QuestionPort : " + p.getConfiguration().QuestionPort)
 
 	// Basic auth check
 	config := map[string]string{
@@ -83,67 +82,62 @@ func (p *Plugin) handleCustomConfigSettings(w http.ResponseWriter, r *http.Reque
 	if _, err := w.Write(responseJSON); err != nil {
 		p.API.LogError("Failed to write custom config settings", "err", err.Error())
 	}
-	p.API.LogInfo("FOR TESTING handleCustomConfigSettings DONE")
 }
 
 
 
 // fetchButtons makes a GET request to the /buttons endpoint and parses the response.
 func (p *Plugin)  fetchButtons(w http.ResponseWriter, r *http.Request)  {
-	p.API.LogInfo("FOR TESTING fetchButtons we are requesting the QuestionServerAddress :" + p.getConfiguration().QuestionServerAddress + " and QuestionPort : " + p.getConfiguration().QuestionPort)
 	url := fmt.Sprintf("%s:%s/buttons", p.getConfiguration().QuestionServerAddress, p.getConfiguration().QuestionPort)
 
 	// Create an HTTP client with a timeout
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(url)
 	if err != nil {
-		p.API.LogError("FOR TESTING failed to make GET request :", "err", err.Error())
+		p.API.LogError("failed to make GET request :", "err", err.Error())
 		return
 	}
 	defer resp.Body.Close() // Ensure the response body is closed
 
 	// Check if the HTTP status code indicates success
 	if resp.StatusCode != http.StatusOK {
-		p.API.LogInfo("FOR TESTING received non-OK status code")
 		return
 	}
 
 	// Read the response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		p.API.LogError("FOR TESTING failed to read response body :", "err", err.Error())
+		p.API.LogError("failed to read response body :", "err", err.Error())
 		return
 	}
 
 	// Unmarshal the JSON response into the struct
 	var buttonsResponse GetButtonsResponse
 	if err = json.Unmarshal(body, &buttonsResponse); err != nil {
-		p.API.LogError("FOR TESTING failed to unmarshal JSON response :", "err", err.Error())
+		p.API.LogError("failed to unmarshal JSON response :", "err", err.Error())
 		return
 	}
 
 	// 2. Marshal the extracted clickData into JSON for the request
 	jsonPayload, err := json.Marshal(buttonsResponse)
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to marshal JSON payload for Flask", "err", err.Error())
+		p.API.LogError("Failed to marshal JSON payload for Flask", "err", err.Error())
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if _, err = w.Write(jsonPayload); err != nil {
-		p.API.LogError("FOR TESTING Failed to write custom config settings", "err", err.Error())
+		p.API.LogError("Failed to write custom config settings", "err", err.Error())
 	}
 }
 
 // sendButtonClick is an HTTP handler that processes a button click POST request.
 // It reads the click data from the request body, forwards it to the Flask server,
 func (p *Plugin) sendButtonClick(w http.ResponseWriter, r *http.Request) {
-	p.API.LogInfo("FOR TESTING sendButtonClick we are requesting the QuestionServerAddress :" + p.getConfiguration().QuestionServerAddress + " and QuestionPort : " + p.getConfiguration().QuestionPort)
 	url := fmt.Sprintf("%s:%s/button-click", p.getConfiguration().QuestionServerAddress, p.getConfiguration().QuestionPort)
 
 	// Ensure the request method is POST
 	if r.Method != http.MethodPost {
-		p.API.LogInfo("FOR TESTING Only POST requests are allowed")
 		return
 	}
 
@@ -154,7 +148,7 @@ func (p *Plugin) sendButtonClick(w http.ResponseWriter, r *http.Request) {
 	var clickData ButtonClickRequest
 	err := json.NewDecoder(r.Body).Decode(&clickData)
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to decode request body", "err", err.Error())
+		p.API.LogError("Failed to decode request body", "err", err.Error())
 		return
 	}
 	defer r.Body.Close()
@@ -162,14 +156,14 @@ func (p *Plugin) sendButtonClick(w http.ResponseWriter, r *http.Request) {
 	// 2. Marshal the extracted clickData into JSON for the request
 	jsonPayload, err := json.Marshal(clickData)
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to marshal JSON payload for Flask", "err", err.Error())
+		p.API.LogError("Failed to marshal JSON payload for Flask", "err", err.Error())
 		return
 	}
 
 	// 3. Create and send the POST request to the server
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to create request", "err", err.Error())
+		p.API.LogError("Failed to create request", "err", err.Error())
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -177,7 +171,7 @@ func (p *Plugin) sendButtonClick(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to send request", "err", err.Error())
+		p.API.LogError("Failed to send request", "err", err.Error())
 
 		return
 	}
@@ -186,20 +180,20 @@ func (p *Plugin) sendButtonClick(w http.ResponseWriter, r *http.Request) {
 	// 4. Read the response from the Flask server
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		p.API.LogError("FOR TESTING Failed to read response", "err", err.Error())
+		p.API.LogError("Failed to read response", "err", err.Error())
 		return
 	}
 
 	// 5. Unmarshal response
 	var clickResponse ButtonClickResponse
 	if err = json.Unmarshal(body, &clickResponse); err != nil {
-		p.API.LogError("FOR TESTING Failed to unmarshal response JSON", "err", err.Error())
+		p.API.LogError("Failed to unmarshal response JSON", "err", err.Error())
 		return
 	}
 
 	// 6. Set the HTTP status code and encode Flask's response to the client
 	w.WriteHeader(resp.StatusCode) // Use Flask's original status code
 	if err = json.NewEncoder(w).Encode(clickResponse); err != nil {
-		p.API.LogError("FOR TESTING Error encoding response for client", "err", err.Error())
+		p.API.LogError("Error encoding response for client", "err", err.Error())
 	}
 }

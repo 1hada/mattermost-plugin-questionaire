@@ -75,7 +75,6 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 // OnConfigurationChange is invoked when configuration changes may have been made.
 //
 func (p *Plugin) OnConfigurationChange() error {
-	p.API.LogInfo("FOR TESTING log OnConfigurationChange START")
 
 	if p.client == nil {
 		p.client = pluginapi.NewClient(p.API, p.Driver)
@@ -89,7 +88,6 @@ func (p *Plugin) OnConfigurationChange() error {
 	}
 
 	p.setConfiguration(configuration)
-	p.API.LogInfo("FOR TESTING log OnConfigurationChange END")
 
 	return nil
 }
@@ -108,7 +106,6 @@ func (p *Plugin) OnConfigurationChange() error {
 // If the Username config option is set to "replaceme" the config value will be
 // replaced with "replaced".
 func (p *Plugin) ConfigurationWillBeSaved(newCfg *model.Config) (*model.Config, error) {
-	p.API.LogInfo("FOR TESTING ConfigurationWillBeSaved")
 
 	cfg := p.getConfiguration()
 	if cfg.disabled {
@@ -139,7 +136,6 @@ func (p *Plugin) ConfigurationWillBeSaved(newCfg *model.Config) (*model.Config, 
 
 // setEnabled wraps setConfiguration to configure if the plugin is enabled.
 func (p *Plugin) setEnabled(enabled bool) {
-	p.API.LogInfo("FOR TESTING setEnabled")
 
 	var configuration = p.getConfiguration().Clone()
 	configuration.disabled = !enabled

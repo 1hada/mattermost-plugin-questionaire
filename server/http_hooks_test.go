@@ -1,6 +1,6 @@
 package main
 
-/*
+
 import (
 	"io"
 	"net/http"
@@ -54,4 +54,3 @@ func TestServeHTTP(t *testing.T) {
 		})
 	}
 }
-*/

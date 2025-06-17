@@ -28,7 +28,7 @@
                 "type": "text",
                 "help_text": "The ipv4 address.",
                 "placeholder": "",
-                "default": "127.0.0.1"
+                "default": "http://127.0.0.1"
             },
             {
                 "key": "QuestionPort",

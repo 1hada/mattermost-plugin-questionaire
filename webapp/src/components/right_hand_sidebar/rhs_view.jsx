@@ -17,7 +17,7 @@ export default class RHSView extends React.PureComponent {
             correctButtonId: null,
             currentUser: null,
             statusMessage: '',
-            iconColor: 'black',
+            iconColor: 'gray',
             iconSymbol: 'icon-information-outline',
             questionServer: '',
             responseStats: '',
@@ -124,11 +124,20 @@ export default class RHSView extends React.PureComponent {
     }
 }
 
+
 const style = {
     rhs: {
         padding: '10px',
     },
+    buttonStyle: {
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+    },
     button: {
+        backgroundColor: 'var(--button-bg)',
+        color: 'var(--button-color)',
+        border: '1px solid var(--button-bg)',
         display: 'block',
         margin: '10px 0',
         padding: '10px 20px',

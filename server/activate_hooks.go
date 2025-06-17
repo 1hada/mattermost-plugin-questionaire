@@ -12,7 +12,6 @@ func (p *Plugin) OnActivate() error {
 	if p.client == nil {
 		p.client = pluginapi.NewClient(p.API, p.Driver)
 	}
-	p.API.LogInfo("FOR TESTING log OnActivate")
 
 	if err := p.OnConfigurationChange(); err != nil {
 		return err
